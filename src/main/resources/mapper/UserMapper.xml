@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.demo.jenkins.springboot02.mapper.UserMapper">
+<mapper namespace="org.demo.jenkins.springboot02.mapper.user.UserMapper">
 
 	<!-- 未开启mybatis的驼峰设置时,使用resultmap映射结果 -->
-	<resultMap id="BaseResultMap" type="org.demo.jenkins.springboot02.model.user.UserEntity">
+	<resultMap id="BaseResultMap" type="org.demo.jenkins.springboot02.model.entity.user.UserEntity">
 		<result column="USER_ID"   jdbcType="VARCHAR" property="userId" />
 		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
 		<result column="NICK_NAME" jdbcType="VARCHAR" property="nickName" />
@@ -24,11 +24,50 @@
 		, #{recordStatus,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{lastUpdateTime,jdbcType=TIMESTAMP}
 	</sql>
 	<!-- 插入用户 -->
-    <insert id="save" parameterType="org.demo.jenkins.springboot02.model.user.UserEntity">
+    <insert id="save" parameterType="org.demo.jenkins.springboot02.model.entity.user.UserEntity">
 		INSERT INTO TBL_USER (<include refid="Base_Column_List" />) 
 		VALUES(
 			#{userId}, #{userName,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}
 			<include refid="add_Common_Base_Column_List" />
 		)
     </insert>
+    
+    <!-- 查询用户 总数 -->
+    <select id="findUsersAtPageCount" resultType="Integer">
+		select 
+			count(1)
+		from TBL_USER
+		<where>
+			<if test="entity.userId != null and entity.userId != ''">AND USER_ID = #{entity.userId}</if>
+			<if test="entity.userName != null and entity.userName != ''">AND USER_NAME = #{entity.userName}</if>
+		</where>
+		order BY CREATE_TIME DESC
+    </select>
+    
+    <!-- 查询用户 分页 -->
+    <select id="findUsers" resultMap="BaseResultMap">
+		select 
+			*
+		from TBL_USER
+		<where>
+			<if test="entity.userId != null and entity.userId != ''">AND USER_ID = #{entity.userId}</if>
+			<if test="entity.userName != null and entity.userName != ''">AND USER_NAME = #{entity.userName}</if>
+		</where>
+		order BY CREATE_TIME DESC
+		<if test="pageEntity.offset != null and pageEntity.pageSize != null">
+			limit #{pageEntity.offset}, #{pageEntity.pageSize}
+		</if>
+    </select>
+    
+    <!-- 查询用户 列表 -->
+    <select id="getList" resultMap="BaseResultMap">
+		select 
+			*
+		from TBL_USER
+		<where>
+			<if test="userId != null and userId != ''">AND USER_ID = #{userId}</if>
+			<if test="userName != null and userName != ''">AND USER_NAME = #{userName}</if>
+		</where>
+		order BY CREATE_TIME DESC
+    </select>
 </mapper>

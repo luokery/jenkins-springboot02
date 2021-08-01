@@ -1,4 +1,4 @@
-package org.demo.jenkins.springboot02.model;
+package org.demo.jenkins.springboot02.model.vo;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author 
  * @date 2018/1/28
  */
-public class CommonEntity {
+public class CommonVO {
 	
 	/**
 	 * 记录状态
@@ -68,7 +68,7 @@ public class CommonEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CommonEntity other = (CommonEntity) obj;
+		CommonVO other = (CommonVO) obj;
 		if (createTime == null) {
 			if (other.createTime != null)
 				return false;

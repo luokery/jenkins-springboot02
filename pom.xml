@@ -25,7 +25,12 @@
 		<spring-boot.version>2.3.8.RELEASE</spring-boot.version>
 		<!-- 8.5.35 9.0.41
 		<tomcat.version>9.0.41</tomcat.version> -->
+		<!-- 数据连接池 1.1.20 1.2.1 -->
+		<druid>1.2.1</druid>
 		
+		<!-- @@@@@@@@ 公共 @@@@@@@@ -->
+		<commons-lang3.version>3.10</commons-lang3.version>
+		<commons-beanutil.version>1.9.4</commons-beanutil.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -65,6 +70,33 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- Druid 数据连接池依赖 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>${druid}</version>
+		</dependency>
+		<!-- ****** 公告包支持 ****** -->
+		<!-- apache开发的常用工具类的包 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>${commons-beanutil.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+        <dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-collections4</artifactId>
+		  <version>4.1</version>
+        </dependency>
 	</dependencies>
 
 	<build>

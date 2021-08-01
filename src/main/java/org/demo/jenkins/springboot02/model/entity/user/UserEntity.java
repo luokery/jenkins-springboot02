@@ -1,6 +1,6 @@
-package org.demo.jenkins.springboot02.model.user;
+package org.demo.jenkins.springboot02.model.entity.user;
 
-import org.demo.jenkins.springboot02.model.CommonEntity;
+import org.demo.jenkins.springboot02.model.entity.CommonEntity;
 
 /**
  * 

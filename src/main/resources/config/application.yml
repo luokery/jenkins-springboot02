@@ -1,0 +1,248 @@
+# 项目信息配置
+project:
+  name: jenkins-springboot02项目
+  version: 1.0.0
+  env: #profileActive#
+  
+debug: false
+
+#打包
+package: 
+  type: jar
+  
+# WEB服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+    max-threads: 1000
+    min-spare-threads: 30
+    uri-encoding: UTF-8
+  # gzip压缩
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,application/x-javascript
+    
+# 环境切换: test dev prod
+# 当前项目maven激活环境，例如：local/dev/test，对应pom.xml中profile设置值
+#spring.profiles.active=test #profileActive#
+spring: 
+  profiles: 
+    # #profileActive#
+    active: #profileActive#
+  application:
+    name: jenkins-springboot02
+  banner:
+    charset: UTF-8
+    location: classpath:config/banner.txt
+    # 叠加激活新的profile: 原来分割配置文件(如:redis, datasource), 公共的配置放到properties里.
+    #include: mvc,data,config
+# 叠加激活新的profile: 原来分割配置文件, 公共的配置放到properties里.
+#spring.profiles.include=mvc,data,config
+  #消息编码格式
+#  messages:
+    #消息编码格式(ValidationMessages.properties)
+#    encoding: UTF-8
+# -----------------------  spring web相关配置
+---   
+spring: 
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  # 设置静态文件路径，js,css等
+  resources: 
+    # 静态资源路径
+    static-locations: classpath:static/,file:static/
+    #不要为我们工程中的资源文件建立映射
+    add-mappings: false
+  mvc:
+    servlet:
+      path: /
+    # 配置ICO
+    favicon: 
+      enabled: true
+    #出现错误时, 直接抛出异常(便于异常统一处理，否则捕获不到404)
+    throw-exception-if-no-handler-found: true
+  jackson:
+    # spring-boot中对于@RestController或者@Controller+@ResponseBody注解的接口方法的返回值默认是Json格式，
+    # 所以当对于date类型的数据，在返回浏览器端是会被spring-boot默认的Jackson框架转换
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 而Jackson框架默认的时区GMT（相对于中国是少了8小时）
+    time-zone: GMT+8
+    # 非空属性才序列化
+    #defaultPropertyInclusion: non_null
+    #serialization:
+      #格式化输出 
+      #indent_output: true
+      #忽略无法转换的对象
+      #fail_on_empty_beans: false
+    deserialization:
+      # 未定义的key不序列化
+      fail_on_unknown_properties: false
+mybatis:
+  type-aliases-package: org.demo.jenkins.springboot02.model.entity
+  #config-location: classpath:config/mybatis-config.xml
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  configuration: 
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  
+## -----------------------   日志配置 配置   -----------------------
+
+#showSql
+# level: TRACE INFO ERROR WARN FATAL OFF
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        security: INFO
+        web: INFO
+      hibernate: DEBUG
+      apache:
+        commons:
+          dbcp2: DEBUG
+      demo:
+        jenkins: DEBUG
+    org.demo.jenkins.springboot02.mapper: DEBUG
+    springfox.documentation: ERROR
+    org.springframework.core: ERROR
+    io.lettuce: ERROR
+  #config: classpath:config/log4j2-${spring.profiles.active}.xml
+  path: D:/logs
+  file: 
+    name: D:/logs/jenkins-springboot02.log
+  #pattern 指定输出场景的日志输出格式
+  pattern:
+    #"%d %-5level [%thread] %logger : %msg%n"
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
+    #"%d %-5level %logger : %msg%n"
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n' 
+
+## -----------------------   druid 配置   -----------------------
+---
+spring:
+  datasource:
+    # 使用的数据库平台 h2 mysql
+    platform: h2
+    # 数据源类型 默认org.apache.tomcat.jdbc.pool.DataSource, HikariCP
+    type: com.alibaba.druid.pool.DruidDataSource
+    # org.h2.Driver  com.mysql.jdbc.Driver com.mysql.cj.jdbc.Driver
+    driverClassName: org.h2.Driver
+    # 备份服务器
+    #url: jdbc:mysql://47.92.195.184:3306/cdata_online?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    #url: jdbc:h2:mem:mem-jenkins-springboot02;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    # 正式服务器
+    url: jdbc:h2:mem:mem-jenkins-springboot02;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    # sa root
+    username: sa
+    # yourpasswordis_rsa Cbdc098765>
+    password: 
+    ##数据初始化设置
+    #进行该配置后, 可以选择初始化数据库: embedded只初始化内存数据库（默认值）,如h2等; never:为不执行初始化;always为始终执行初始化
+    initialization-mode: embedded
+    sql-script-encoding: utf-8
+    # sql执行错误是否继续
+    continue-on-error: false
+    # 执行schema.sql或者data.sql时，用的用户
+    data-username: sa
+    data-passwork: 
+    schema-username: sa
+    schema-password: 
+    # 数据项配置，项目启动时需要执行的sql脚本
+    schema: classpath:db/schema.sql
+    #进行该配置后，每次启动程序，程序都会运行(数据)
+    data: classpath:db/init_data.sql
+    ## druid 配置，Spring Boot 默认是不注入不了这些属性值的，需要自己绑定#druid 数据源专有配置
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      #用来检测连接是否有效的sql
+      validationQuery: SELECT 1 FROM DUAL
+      #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全性
+      testWhileIdle: true
+      #获取连接时执行检测，建议关闭，影响性能
+      testOnBorrow: false
+      #归还连接时执行检测，建议关闭，影响性能
+      testOnReturn: false
+      #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
+      poolPreparedStatements: true
+      #开启poolPreparedStatements后生效
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 合并多个DruidDataSource的监控数据 
+      useGlobalDataSourceStat: false
+      # 通过connectProperties属性来打开mergeSql功能；slowSqlMillis慢SQL记录: 500毫秒 
+      # config.file配置文件; config.decrypt: 启用加密; config.decrypt.key: 配置公钥
+      connectionProperties: "druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500;config.decrypt=false;config.decrypt.key=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4P05ueQepxMJdZtm73eFEmL0wTZb7XN+PL7qdvttPhRrgSPLyTGh4sELFCLurOBC2R/rTysJ0K8Z5wuC1N2RYZ+SRQIIa9FvdlO30VrCstfJUGKlsuOqFKqcdm4nG/qOOAu0OKX2MYiwCnoyNl9fLS4jb6I9aNFJRAzlkzKXTH2gVuQxTyKT9z08uMfuxi7BxrTTY9+Ypqp8hqHDo+mN4i1CFKBx0xmUEp9TasiFCPabdbX2KmoPpH2iZZrvg0wSIxwRN42fwmuz+vZYytxq8x0vqFMr2GTpqMCBLYI3Q4JT2YHIfNc7y1LaHJliogL9HlPqz0Aox087vOTjomuXxQIDAQAB"
+      # Druid StatViewServlet配置: 注意, 这里如果被其它过滤器拦截, 并修改了请求, 可能造成无法登陆druid后台
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username: admin
+        login-password: admin
+        allow: '127.0.0.1,10.0.0.1'
+        deny: '10.0.0.1,10.0.0.2'
+      # Druid WebStatFilter配置
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.html'
+        # profileEnable能够监控单个url调用的sql列表
+        profileEnable: true
+      #配置监控统计拦截的filters，stat:监控统计、log4j：日志记录、wall：防御sql注入，去掉后监控界面sql无法统计，'wall'用于防火墙
+      #config是为了数据库加密
+      filters: stat,wall,log4j2,config
+      # spring监控
+      aop-patterns: org.demo.jenkins.springboot02.mapper.*, org.demo.jenkins.springboot02.service.*, org.demo.jenkins.springboot02.controller.*
+      # 过滤器配置: 日志输出
+      filter:
+        slf4j:
+          enabled: true
+          statement-create-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          result-set-close-after-log-enabled: false
+        stat:
+          log-slow-sql: true
+          merge-sql: true
+          slow-sql-millis: 500
+        wall:
+          config:
+            delete-allow: true
+            drop-table-allow: false
+---
+# 配置h2的远程访问
+spring:
+  h2:
+    console:
+      settings:
+        web-allow-others: true
+      # 配置程序开启时就会启动h2 web consloe
+      enabled: true
+      #，进行该配置，你就可以通过YOUR_URL/h2-console访问h2 web consloe。YOUR_URL是你程序的访问URl
+      path: /h2-console
+
+# Swagger配置
+swagger:
+  host:
+  title: ${project.name}接口文档
+  description: ${project.name}接口文档
+  enabled: true
+  # 禁用swagger时的重定向地址
+  redirect-uri: /
+  email: xxxx@xxxx.com
+  url: http://www.xxx.com
+  author: xxxx
+  serviceUrl: http://localhost:8080/
