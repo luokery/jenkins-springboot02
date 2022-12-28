@@ -42,7 +42,11 @@ public class BeanUtil {
 	private BeanUtil() {
 		objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
-	
+
+	/**
+	 * 枚举单列模式
+	 * @author jun
+	 */
 	private static enum Singleton {
 	    INSTANCE;
 
@@ -50,14 +54,17 @@ public class BeanUtil {
 
 	    Singleton() {
 	        this.instance = new BeanUtil();
-//	        System.out.println("枚举类构造函数");
 	    }
 
 	    public BeanUtil getInstance() {
 	        return this.instance;
 	    }
 	}
-
+	
+	static {
+		Singleton.INSTANCE.getInstance();
+	}
+	
 	/**
 	 * 属性拷贝工具
 	 * 
