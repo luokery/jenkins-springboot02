@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author 
  */
 @SpringBootApplication
-public class springboot02Application {
+public class Springboot02Application {
 	
 	public static void main(String[] args) {
-		SpringApplication.run(springboot02Application.class, args);
+		SpringApplication.run(Springboot02Application.class, args);
 	}
 }

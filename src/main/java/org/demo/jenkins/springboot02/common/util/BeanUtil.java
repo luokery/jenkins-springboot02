@@ -20,6 +20,7 @@ import org.demo.jenkins.springboot02.exception.BusinessException;
 import org.demo.jenkins.springboot02.exception.UtilsException;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.cglib.beans.BeanMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -38,33 +39,34 @@ public class BeanUtil {
 	public static BeanUtil getInstance() {
 		return Singleton.INSTANCE.getInstance();
 	}
-	
+
 	private BeanUtil() {
 		objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
 
 	/**
 	 * 枚举单列模式
+	 * 
 	 * @author jun
 	 */
 	private static enum Singleton {
-	    INSTANCE;
+		INSTANCE;
 
-	    private BeanUtil instance;
+		private BeanUtil instance;
 
-	    Singleton() {
-	        this.instance = new BeanUtil();
-	    }
+		Singleton() {
+			this.instance = new BeanUtil();
+		}
 
-	    public BeanUtil getInstance() {
-	        return this.instance;
-	    }
+		public BeanUtil getInstance() {
+			return this.instance;
+		}
 	}
-	
+
 	static {
 		Singleton.INSTANCE.getInstance();
 	}
-	
+
 	/**
 	 * 属性拷贝工具
 	 * 
@@ -293,15 +295,16 @@ public class BeanUtil {
 		return result;
 	}
 
-	public static <E> List<E> copyList( List<?> list, Class<E> clazz) throws JsonProcessingException {
-		
+	public static <E> List<E> copyList(List<?> list, Class<E> clazz) throws JsonProcessingException {
+
 		if (CollectionUtils.isEmpty(list)) {
 			return new ArrayList<E>();
 		}
 //		ObjectMapper objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		String jsonString = BeanUtil.objectMapper.writeValueAsString( list);
+		String jsonString = BeanUtil.objectMapper.writeValueAsString(list);
 		return BeanUtil.objectMapper.readValue(jsonString, getCollectionType(list.getClass(), clazz));
 	}
+
 	/**
 	 * 获取泛型的Collection Type
 	 * 
@@ -312,4 +315,28 @@ public class BeanUtil {
 	private static JavaType getCollectionType(Class<?> collectionClass, Class<?>... elementClasses) {
 		return BeanUtil.objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
 	}
+
+    /**
+     * 将对象属性转化为map结合
+     */
+    public static <T> Map<String, Object> beanToMap(T bean) {
+        Map<String, Object> map = new HashMap<>(16);
+        if (bean != null) {
+            BeanMap beanMap = BeanMap.create(bean);
+            for (Object key : beanMap.keySet()) {
+                map.put(key + "", beanMap.get(key));
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 将map集合中的数据转化为指定对象的同名属性中
+     */
+    public static <T> T mapToBean(Map<String, Object> map, Class<T> clazz) throws Exception {
+        T bean = clazz.newInstance();
+        BeanMap beanMap = BeanMap.create(bean);
+        beanMap.putAll(map);
+        return bean;
+    }
 }
